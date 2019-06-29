@@ -304,4 +304,7 @@ $ git stash pop
 ```bash
 # 生成一个可供发布的压缩包
 $ git archive
+
+# 压缩修改到前一个提交，成为一个历史记录
+$ git rebase -i HEAD~[number]
 ```
