@@ -307,4 +307,7 @@ $ git archive
 
 # 压缩修改到前一个提交，成为一个历史记录
 $ git rebase -i HEAD~[number]
+
+# 当远程仓库更新，而本地仓库没有获取那次更新的时候执行
+git pull --rebase origin master
 ```
