@@ -1,0 +1,7 @@
+启动应用（指定脚本和服务名称）
+pm2 start tako-tentacles ~/Tentacles/tako-tentacles -n tako-tentacles
+
+开启自启动（先保存列表，再设置开启自启动）
+pm2 save 
+pm2 startup
+复制输出的脚本

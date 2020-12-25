@@ -1,0 +1,26 @@
+方法一：
+db.appversion.aggregate([
+    {"$project": {
+      "appid": {
+        "$toObjectId": "$appid"
+      }
+    }},
+    {"$lookup": {
+        "from": "app",
+        "localField": "appid",
+        "foreignField": "_id",
+        "as": "app"
+    }}
+])
+
+方法二：
+似乎要特殊的版本
+db.appversion.aggregate([
+    {"$lookup": {
+        "let": { "appid": { "$toObjectId": "$appid" }},
+        "from": "app",
+        "localField": "appid",
+        "foreignField": "_id",
+        "as": "app"
+    }}
+])

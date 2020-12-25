@@ -1,0 +1,1 @@
+curl POST -F "voice=@tensorflow2.0.txt" localhost:8769/

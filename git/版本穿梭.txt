@@ -1,0 +1,4 @@
+# 版本穿梭
+git reset --hard versionnumber
+# 查看穿梭记录
+git relog

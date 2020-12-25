@@ -1,0 +1,41 @@
+网卡配置修改注意项：
+vim /etc/resolv.conf
+#修改 
+nameserver=192.168.47.2   # 网关IP
+
+vim /etc/sysconfig/network
+NETWORKING=yes
+HOSTNAME=localhost.localdomain
+
+vim /etc/sysconfig/network-scripts/ifcfg-ens33
+#添加
+IPADDR=192.168.47.*
+NETMASK=255.255.255.0
+GATEWAY=192.168.47.2
+DNS1=192.168.47.2
+#修改
+BOOTPROTO="static"
+ONBOOT="yes"
+#重启网卡
+service network restart
+
+#设置hosts
+vim /etc/hosts
+
+
+虚拟机静态IP分配策略
+子网IP：192.168.47.0
+子网掩码：255.255.255.0
+网关IP：192.168.47.2
+
+
+所有主机 hosts 配置
+虚拟机名		域名	IP地址
+Hadoop0		Master	192.168.47.3
+Hadoop1		Slave1	192.168.47.4
+Hadoop2		Slave2	192.168.47.5
+ZK0		ZK0	192.168.47.10
+ZK1		ZK1	192.168.47.11
+ZK2		ZK2	192.168.47.12
+ZK3		ZK3	192.168.47.13
+ZK4		ZK4	192.168.47.14

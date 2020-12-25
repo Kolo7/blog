@@ -1,0 +1,29 @@
+先确认nginx启动并且端口开放了
+
+确认nginx.conf的配置中有这么一句话
+
+http{
+	include /etc/nginx/conf.d/*.conf;
+}
+
+拷贝私钥和证书到:
+
+/etc/nginx/cert/
+
+把conf.d/xxx_https.conf文件拷到服务器的对应位置：
+/etc/nginx/conf.d
+
+修改对应项：
+改成自己的
+server_name zhminio-tako2.seasungame.com;
+ssl_certificate cert/seasungame.com.crt;
+ssl_certificate_key cert/seasungame.com.key;
+
+localtion / {
+	proxy_pass http://localhost:9000;
+}
+
+重新加载：
+systemctl reload nginx
+
+检验一下

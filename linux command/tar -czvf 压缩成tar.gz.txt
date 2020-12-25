@@ -1,0 +1,1 @@
+tar -zcvf xxxx.tar.gz xxxx/

@@ -1,0 +1,2 @@
+{'members':{'$in':['kuangle@kingsoft.com']}}
+{'members':{'$elemMatch':{'$eq': 'kuangle@kingsoft.com'}}}

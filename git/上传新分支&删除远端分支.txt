@@ -1,0 +1,8 @@
+上传新分支
+git branch origin localbranch:remotebranch
+
+删除远端分支
+git branch origin --delete remotebranch
+
+删除本地分支
+git branch -d localbranch

@@ -1,0 +1,3 @@
+mongodump -u username -p password -d database -o db_dump.202012xxxx
+
+tar -czvf db_dump.202012xxxx.tar.gz db_dump.202012xxxx

@@ -1,0 +1,26 @@
+|--XMLConfigBuilder：用来创建Configuration对象的工具类
+	|--XMLConfigBuilder#构造方法：实例化Configuration对象。
+		|--XPathParser：提供基于XPath语法的XML解析器
+			|--XPathParser#构造方法：创建Document对象，使用DOM解析方式
+			
+	|--XMLConfigBuilder#parse：用来解析全局配置文件，形成Configuration对象
+		|--XMLConfigBuilder#parseConfiguration：解析根标签下的节点
+			|--XMLConfigBuilder#mapperElement：解析mappers标签，加载映射文件
+				|--XMLMapperBuilder#构造方法：实例化XpatParser对象，并获取映射文件的Document
+				|--XMLMapperBuilder#parse：解析映射文件，获取MappedStatement对象
+					|--XMLMapperBuilder#configurationElement：解析映射文件
+						|--XMLMapperBuilder#buildStatementFromContext：解析select\update\insert\delete标签
+							|--XMLStatementBuilder:用来获取Configuration对象的
+								|--XMLStatementBuilder#parseStatementNode：解析statement节点
+									|--MapperBuilderAssistant：MappedStatement构建者助手
+										|--MapperBuilderAssistant#addMappedStatement:使用构建者模式创建MappedStatement对象，将MappedStatement对象添加到Configuration对象中的一个map结构中，key是statement的id，也就是select标签的id属性
+									
+									
+
+|--XMLLanguageDriver#createSqlSource：获取解析之后的SQL信息，以及参数信息
+	|--XMLScriptBuilder#构造方法：初始化动态SQL中的节点处理器集合
+	|--XMLScriptBuilder#parseScriptNode:
+		|--XMLScriptBuilder：parseDynamicTags：解析动态SQL的标签
+		
+|--SqlSource#getBoundSql
+	|--SqlSourceBuilder#parse：将带有#{}的SQL语句进行解析，然后封装到StaticSqlSource中

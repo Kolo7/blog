@@ -1,0 +1,30 @@
+#´´½¨±í
+create table stu(
+sno varchar(20) primary key,
+password varchar(20),
+sname varchar(20),
+sex varchar(20),
+class varchar(20))engine=INNODB;
+
+create table course(
+cno varchar(20) primary key,
+cname varchar(20),
+credit varchar(20),
+lecturer varchar(20),
+startline date,
+deadline date)engine=INNODB;
+
+
+create table sc(
+sno varchar(20) ,
+cno varchar(20) ,
+constraint foreign key (cno) references course(cno),
+constraint foreign key (sno) references stu(sno))engine=INNODB;
+
+create table admin (
+account varchar(20) primary key,
+password varchar(20),
+name varchar(20)
+)engine=INNODB;
+
+

@@ -1,0 +1,11 @@
+错误描述
+
+E:\golangWork\pkg\mod\github.com\coreos\etcd@v3.3.18+incompatible\clientv3\balancer\picker\err.go:37:44: undefined: balancer.PickOptions
+E:\golangWork\pkg\mod\github.com\coreos\etcd@v3.3.18+incompatible\clientv3\balancer\picker\roundrobin_balanced.go:55:54: undefined: balancer.PickOptions
+
+
+解决方案：
+替换etcd版本为1.26.0
+go mod edit -require=google.golang.org/grpc@v1.26.0
+
+go get -u -x google.golang.org/grpc@v1.26.0

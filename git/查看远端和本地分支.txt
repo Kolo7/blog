@@ -1,0 +1,5 @@
+查看远端
+git remote -v
+
+查看所有分支
+git branch -a

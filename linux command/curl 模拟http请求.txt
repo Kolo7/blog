@@ -1,0 +1,3 @@
+-X 指定method
+-F 表单方式上传
+-H 指定header

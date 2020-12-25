@@ -1,0 +1,158 @@
+﻿# 电信网账号密码
+18100743573
+661956
+########################################################
+51nod密码：5894159
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+app名称 ：开课吧   用户名：13750080204  pilot@soft
+
+开课吧讲课课件：https://gitlab.kaikeba.com/users/sign_in  账号密码都是java05080204
+
+app：开课吧 账号：13025771283 密码：136248wty
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+大数据：林子雨视频：https://study.163.com/course/courseMain.htm?courseId=1002887002
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+宝塔：
+username: kbbjazq4
+password: f2231acb
+
+ftp:
+root
+abc123
+
+数据库密码：abc123
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+卓轩：所有服务器
+	账号：root
+	密码：wakedata.com
+
+	代理账号密码
+		kuangjing 
+		kj.111111
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+git：
+	ssh密码：网易密码
+
+韩锦涛QQ账号密码
+1928774932
+hean12138
+###################################################################################################
+姐夫qq密码
+rr1457
+####################################################################################################
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+更新于 6月25日 15:10:49
+開發規範文檔: 
+http://gitlab.wakedata.com/wuhaoqing/dw-springboot-demo/blob/master/doc/大数据技术团队-开发规范/惟客数据-大数据开发平台技术规范.md
+
+
+git地址
+前端：  http://gitlab.wakedata-inc.com/fecookie/big-data.git
+原型：  https://www.xiaopiu.com/   账密： ls_thy@163.com/oocl2011
+
+大数据平台系统
+1.  集成开发平台  dw-flow   (包含三大功能模块)
+    1.1 WebIde可视化编码
+    1.2 离线调度(python\hiveSQL\shell)
+    1.3 数据交换平台（Data-In）
+2. 自助分析（报表）平台   dw-chart
+3. 流计算平台  dw-streaming
+       域名： stream.wakedata.com
+4. 推荐系统  dw-recommend
+       域名： recom.wakedata.com
+5. 用户画像与洞察平台   dss-dmp
+       域名： dmp.wakedata.com
+6.  统一登录与权限系统  dw-auth
+        auth.wakedata.com
+7. 大数据运维平台    dw-ambari 
+
+# 开发集群(172.26.59.*)
+
+集群名字：HDPCluster
+
+1. 集群管理界面 
+1.1 ambari管理配置界面
+http://hd-59-27.wakedata.com:8080  or  http://172.26.59.27:8080
+- 登录账密admin/admin
+
+1.2 ranger配置界面
+http://hd-59-28.wakedata.com:6080/  or  http://172.26.59.28:6080/
+- 登录账密admin/wakedata123
+
+1.3 altas dashboard界面
+http://hd-59-28.wakedata.com:21000/  or  http://172.26.59.28:21000、
+- 登录账密admin/wakedata123
+
+2. ambari组件数据库信息
+- 地址: jdbc:mysql://172.26.59.35:3306/
+- 管理账密为mysqluser/mysqluser;
+- ambari，hive账密为mysqluser/mysqluser;
+
+3. hosts列表
+172.26.59.27 hd-59-27.wakedata.com
+172.26.59.28 hd-59-28.wakedata.com
+172.26.59.56 hd-59-56.wakedata.com
+172.26.59.57 hd-59-57.wakedata.com
+
+4. 开发平台
+- flow开发环境（集成开发平台）
+172.26.59.46 flow.wakedata.com
+172.26.59.46 dss-res.meizu.com
+172.26.59.44 auth.wakedata.com
+管理员登录账密：admin/asdfasdf
+
+- chart开发环境（大屏，自助分析）
+172.26.59.83 chart.wakedata.com
+172.26.59.83 dss-res.meizu.com
+172.26.59.44 auth.wakedata.com
+管理员登录账密：admin/asdfasdf
+
+
+# 测试集群(172.31.3.*)
+
+集群名字：HDPCluster
+
+1. 集群管理界面 
+1.1 ambari管理配置界面
+http://hd-node-3-23.wakedata.com:8080  or  http://172.31.3.23:8080
+- 登录账密admin/admin
+
+1.2 ranger配置界面
+http://hd-node-3-43.wakedata.com:6080  or  http://172.31.3.43:6080/
+- 登录账密admin/wakedata123
+
+1.3 altas dashboard界面
+http://hd-node-3-25.wakedata.com:21000/ or  http://172.31.3.25:21000、
+- 登录账密admin/wakedata123
+
+1.4 其他组件地址直接登录ambari查看所在域名, 如需登录用户名会直接显示出来，而默认密码为: wakedata123
+
+2. ambari组件数据库信息
+- 地址: jdbc:mysql://hd-node-3-25.wakedata.com:3306
+- root用户密码为： mysql!1A
+- ambari，hive，rangeradmin用户数据库密码为：2ZnwdVE_b
+
+注意： 其他非ambari管理的不要在这里创建database，比如我们的flow，stream平台需要在其他空闲服务器51,52,53自建数据库。
+
+3. hosts列表：
+172.31.3.23 hd-node-3-23.wakedata.com
+172.31.3.24 hd-node-3-24.wakedata.com
+172.31.3.25 hd-node-3-25.wakedata.com
+172.31.3.41 hd-node-3-41.wakedata.com
+172.31.3.42 hd-node-3-42.wakedata.com
+172.31.3.43 hd-node-3-43.wakedata.com
+172.31.3.51 hd-node-3-51.wakedata.com
+172.31.3.52 hd-node-3-52.wakedata.com
+172.31.3.53 hd-node-3-53.wakedata.com
+
+- 23-25和41-43六个主机部署了ambarid和hadoop组件。
+- 51-53部署flow，stream，报表等平台，禁止部署到其他主机。
+
+
+4. 开发
+流平台stream:    http://172.31.3.53:8888/index.html
+报表演示chart:   http://172.31.3.51:8090/
+集成开发平台flow: http://172.31.3.51:8080/
