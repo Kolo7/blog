@@ -1,2 +1,0 @@
-Java 虚拟机面试题：https://blog.csdn.net/codejas/article/details/80466813?tdsourcetag=s_pcqq_aiomsg
-mysql加锁：http://www.cnblogs.com/crazylqy/p/7611069.html

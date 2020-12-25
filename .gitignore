@@ -1,0 +1,9 @@
+*.exe
+*.yaml
+go.sum
+.idea/
+playground/
+vendor/
+简历求职/
+极其重要的记录/
+学习工作分享/
