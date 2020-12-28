@@ -1,5 +1,5 @@
 安装源
-yum install epel-rekease
+yum install epel-release
 
 安装nginx
 yum install nginx
