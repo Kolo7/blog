@@ -160,3 +160,85 @@ func readRequest(b *bufio.Reader, deleteHostHeader bool) (req *Request, err erro
 ```
 
 上面分别读取了协议头、URI、header。并且在transfer中将body置为了`http.conn`
+
+可以知道，只有在真正读取body的时候，才会调用从内存中读。
+
+### handler
+
+```go
+// server.go
+func (c conn)serve(ctx context.Contenxt){
+    ...
+    serverHandler{c.server}.ServeHTTP(w, w.req)
+    ...
+}
+
+// server.go
+func (sh serverHandler) ServeHTTP(rw ResponseWriter, req *Request) {
+    handler := sh.srv.Handler
+    if handler == nil {
+        handler = DefaultServeMux
+    }
+    ...
+    handler.ServeHTTP(rw, req)
+}
+```
+
+Handler接口也就是我们真正处理http请求业务逻辑要实现的接口，但一般http服务不止一个handler，对应不同URI有不同的handler来处理。
+因此在http中还有一个多路复用器，用于分发http请求。
+
+```go
+type ServeMux struct { 
+    mu    sync.RWMutex
+    m     map[string]muxEntry
+    es    []muxEntry // slice of entries sorted from longest to shortest.
+    hosts bool       // whether any patterns contain hostnames
+}
+
+type muxEntry struct {
+    h       Handler
+    pattern string
+}
+
+func (mux *ServeMux) Handler(r *Request) (h Handler, pattern string) 
+func (mux *ServeMux) ServeHTTP(w ResponseWriter, r *Request)
+func (mux *ServeMux) Handle(pattern string, handler Handler) 
+func (mux *ServeMux) HandleFunc(pattern string, handler func(ResponseWriter, *Request))
+```
+
+```go
+func (mux *ServeMux) HandleFunc(pattern string, handler func(ResponseWriter, *Request)){
+    mux.Handle(pattern, HandlerFunc(handler))
+}
+
+func (mux *ServeMux) Handle(pattern string, handler Handler){
+    ...
+    e := muxEntry{h: handler, pattern: pattern}
+	mux.m[pattern] = e
+	if pattern[len(pattern)-1] == '/' {
+		mux.es = appendSorted(mux.es, e)
+	}
+    ...
+}
+// 重命名了这类handler函数
+type HandlerFunc func(ResponseWriter, *Request)
+// 调用真实的函数
+func (f HandlerFunc) ServeHTTP(w ResponseWriter, r *Request) {
+	f(w, r)
+}
+```
+
+多路复用器的代码很简单，mu保证分发的时候是同步的。muxEntry就是处理器与对应URI的映射。
+调用HandleFunc或者是Handle方法向多路复用器注册Handler，httpServer将会在收到http请求的时候调用`HttpServe`分发请求，多路复用器依照URI找到映射的handler，并且执行。
+
+注册的handler函数，必须是实现了HandlerFunc接口，也就是`handler func(ResponseWriter, *Request)`。
+
+```go
+func (mux *ServeMux) ServeHTTP(w ResponseWriter, r *Request){
+    ...
+    h, _ := mux.Handler(r)
+    h.ServeHTTP(w, r)
+}
+```
+
+未完，还有很多细节。
