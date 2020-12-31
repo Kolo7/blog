@@ -223,7 +223,7 @@ func Start() error {
 
 ### 应用层连接
 
-前面不管是普通的rpc还是grpc，第一步建立起来监听都是tcp连接。由于micro事无巨细的设计，整个http连接的细节都暴露出来。
+前面不管是普通的rpc还是grpc，第一步建立起来监听都是tcp连接。而micro在handler中拦截了请求，拿到了http底层的`net.Conn`以及向其中读写的流。
 
 
 ```go
@@ -248,6 +248,11 @@ func (h *httpTransportListener) Accept(fn func(Socket)) error {
     ...
 	// register our transport handler
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        ...
+        hj, ok := w.(http.Hijacker)
+        ...
+        conn, bufrw, err := hj.Hijack()
+        ...
         // execute the socket
 		fn(sock)
 	})
@@ -262,5 +267,3 @@ func (h *httpTransportListener) Accept(fn func(Socket)) error {
 ```
 
 micro与http的关系在这里梳理清楚了，micro创建一个http.Server，设置了全新的多路复用器，而这个复用器加入了一个handler，在这handler中，注入了micro自己的处理器，也就是从这里拿到了http中包括requset、ResponseWriter、一个读取body的buifo.ReadWriter。
-
-
