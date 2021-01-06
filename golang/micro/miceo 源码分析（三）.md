@@ -187,7 +187,7 @@ go func(id string, psock *socket.Socket) {
 ```
 这里最重要的是将构建好的请求和响应交给到router，经过多层包装器的处理，将会走到rpc_router.router。这里也可以得知，每一个psocket将会有一个router来处理请求。
 
-#### 读取header
+### 读取header
 
 在交给真正的逻辑方法处理request,response之前，有router调用codec的解码方法，读取了header和body。
 ```go
@@ -201,6 +201,7 @@ func (router *router) readRequest(r Request) (service *service, mtype *methodTyp
     cc := r.Codec()
     service, mtype, req, keepReading, err = router.readHeader(cc)
     ...
+    // 从rpc请求的body中读取参数值
     if err = cc.ReadBody(argv.Interface()); err != nil {
 		return
     }
@@ -214,8 +215,105 @@ func (router *router) readHeader(cc codec.Reader) (service *service, mtype *meth
     ...
     serviceMethod := strings.Split(req.msg.Endpoint, ".")
     ...
+    // 服务启动时注册了service
     service = router.serviceMap[serviceMethod[0]]
     ...
+    // 服务下对应的方法
     mtype = service.method[serviceMethod[1]]
 }
 ```
+
+在此处调用解码器，从rpc的message中读取到header信息，在从body中按照args的reflect.Value去读取参数值。这样完成了Request的构建。
+
+### 反射调用
+
+获得request后，就以反射的形式调用service下对应的方法去处理请求。
+```go
+fn := func(ctx context.Context, req Request, rsp interface{}) error {
+	returnValues = function.Call([]reflect.Value{s.rcvr, mtype.prepareContext(ctx), reflect.ValueOf(argv.Interface()), reflect.ValueOf(rsp)})
+        ...
+	return nil
+}
+// 把配置中的各种包装器全部套上去
+for i := len(router.hdlrWrappers); i > 0; i-- {
+	fn = router.hdlrWrappers[i-1](fn)
+}
+// 调用反射方法
+if err := fn(ctx, r, replyv.Interface()); err != nil {
+	return err
+}
+// 通过解码器将resp发送到客户端
+return router.sendResponse(sending, req, replyv.Interface(), cc, true)
+```
+
+这里反射调用的方法是golang经典的调用方法。
+
+下面是一个抽离出关键逻辑的示例。
+```go
+type A struct {
+    name string
+}
+func (a *A)Print(suffix string){
+    return a.name+suffix
+}
+
+type service struct {
+	name   string                 // name of service
+	rcvr   reflect.Value          // receiver of methods for the service
+	typ    reflect.Type           // type of the receiver
+	method map[string]*methodType // registered methods
+}
+
+func MakeService(rep interface{}) (*service) {
+	ser := service{}
+	ser.typ = reflect.TypeOf(rep)
+	ser.rcvr = reflect.ValueOf(rep)
+	// name返回其包中的类型名称，举个例子，这里会返回Person，tool
+	name := reflect.Indirect(ser.rcvr).Type().Name()
+	fmt.Println(name)
+	ser.servers = map[string]reflect.Method{}
+	fmt.Println( ser.typ.NumMethod(), ser.typ.Name())
+	for i:=0 ; i < ser.typ.NumMethod(); i++ {
+		method := ser.typ.Method(i)
+		//mtype := method.Type	// reflect.method
+		mname := method.Name	// string
+		ser.servers[mname] = method
+	}
+	return &ser
+}
+
+func main(){
+    methods := MakeService(p1)
+    methname := "PrintInfo"
+	if method, ok := methods.servers[methname]; ok{
+        function := method.Func
+        returnVakues := function.Call([]reflect.Value{methods.rcvr,reflect.ValueOf(&t1)})
+        fmt.Sprintf(returnValues[0].String())
+        print(methods.rcvr.String())
+    }
+}
+
+```
+
+### stream方法
+
+从反射调用的层面看，stream和普通的方法没有太多的差别。
+
+```go
+fn := func(ctx context.Context, req Request, stream interface{}) error {
+    returnValues = function.Call([]reflect.Value{s.rcvr, mtype.prepareContext(ctx), reflect.ValueOf(stream)})
+    ...
+}
+for i := len(router.hdlrWrappers); i > 0; i-- {
+	fn = router.hdlrWrappers[i-1](fn)
+}
+return fn(ctx, r, rawStream)
+```
+
+不同点在于，stream没有参数需要传入，只需要传入stream对象。
+
+### 总结
+
+有关于rpc协议从获取套接字，到反射调用service.method的路径就打通了。这里还是有很多细节没有分析到，如：codec到底怎么去读取分割子节；还有的是关于stream方法和普通方法的具体差异，stream的循环阻塞在何处。
+
+codec需要针对具体的协议，常见的协议就是protobuf，后面再分析。而stream方法需要从方法注册的时机入手分析，这一部分和服务注册一起分析。
