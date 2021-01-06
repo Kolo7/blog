@@ -142,7 +142,7 @@ func init() {
 
 ## grpcServer的实现
 
-前面的分析的Transport是走了http方式，实际上也是server并不是http而是grpc，而grpc的server默认的Transport是什么，这里再对grpc来次全新的分析。
+前面的分析的Transport是走了http方式，实际server并不是http而是grpc，而grpc的server默认的Transport是什么，这里再对grpc来次全新的分析。
 
 ### 额外的Option
 
