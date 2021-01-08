@@ -47,3 +47,23 @@ for m := 0; m < typ.NumMethod(); m++ {
 
 通过反射机制，取得service的所有方法（endpoint）的信息。
 
+```go
+rcvr := h.Handler()
+s := new(service)
+s.typ = reflect.TypeOf(rcvr)
+s.rcvr = reflect.ValueOf(rcvr)
+s.name = h.Name()
+s.method = make(map[string]*methodType)
+for m := 0; m < s.typ.NumMethod(); m++ {
+	method := s.typ.Method(m)
+	if mt := prepareMethod(method); mt != nil {
+		s.method[method.Name] = mt
+	}
+}
+router.serviceMap[s.name] = s
+```
+
+在这里装配好了service和endpoint，并且通过map映射name和value。以供接收消息后调用，这一部分在`源码阅读（三）`有详细的流程分析。
+
+### 服务注册
+

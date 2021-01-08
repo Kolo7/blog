@@ -1,0 +1,8 @@
+添加规则：
+iptables -I INPUT 5 -s 180.235.73.131 -p tcp -m tcp --dport 10050 -m comment --comment "zabbix" -j ACCEPT
+
+删除规则
+iptables -D 5
+
+保存配置
+iptables-save
