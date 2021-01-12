@@ -96,5 +96,35 @@ cmd.app.Action = func(c *cli.Context) error {
 
 工具用起来还是很简单的，要配置的重要属性主要是Flags和Before。Flag必须是cli.Flag数组。以上面截取的部分Flags来看，Name代表着启动参数，如：`--registry`；EnvVars代表着读取环境变量的key；Value是默认值。而Before配置的函数将会在执行子命令前被调用，可以认为就是在这个函数中完成从cmd参数到具体配置项的赋值就行。
 
+```go
+func (c *cmd) Init(opts ...Option) error {
+    ...
+	c.app.RunAndExitOnError()
+	return nil
+}
+```
+在Init方法中调用了将os.Args赋值给c.app的步骤。
+
+### 服务注册
+
+```go
+if name := ctx.String("registry"); len(name) > 0 && (*c.opts.Registry).String() != name {
+	r, ok := c.opts.Registries[name]
+	if !ok {
+		return fmt.Errorf("Registry %s not found", name)
+	}
+	*c.opts.Registry = r(registrySrv.WithClient(microClient))
+	serverOpts = append(serverOpts, server.Registry(*c.opts.Registry))
+	clientOpts = append(clientOpts, client.Registry(*c.opts.Registry))
+	if err := (*c.opts.Selector).Init(selector.Registry(*c.opts.Registry)); err != nil {
+		logger.Fatalf("Error configuring registry: %v", err)
+	}
+	clientOpts = append(clientOpts, client.Selector(*c.opts.Selector))
+	if err := (*c.opts.Broker).Init(broker.Registry(*c.opts.Registry)); err != nil {
+		logger.Fatalf("Error configuring broker: %v", err)
+	}
+
+```
+
 
 
