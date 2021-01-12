@@ -55,6 +55,28 @@ options在初始化时设置了一些默认的实现，例如这里的服务注�
 #### cli工具
 
 ```go
+DefaultFlags = []cli.Flag{
+    ...
+    &cli.StringFlag{
+	Name:    "registry",
+	EnvVars: []string{"MICRO_REGISTRY"},
+	Usage:   "Registry for discovery. etcd, mdns",
+    },
+    &cli.StringFlag{
+	Name:    "registry_address",
+	EnvVars: []string{"MICRO_REGISTRY_ADDRESS"},
+	Usage:   "Comma-separated list of registry addresses",
+    },
+    &cli.IntFlag{
+	Name:    "register_ttl",
+	EnvVars: []string{"MICRO_REGISTER_TTL"},
+	Value:   60,
+	Usage:   "Register TTL in seconds",
+    },
+    ...
+}
+...
+
 cmd := new(cmd)
 cmd.opts = options
 cmd.app = cli.NewApp()
@@ -69,3 +91,10 @@ cmd.app.Action = func(c *cli.Context) error {
 ```
 
 这里的`cli.NewApp()`是用的第三方库。
+
+> github.com/micro/cli/v2
+
+工具用起来还是很简单的，要配置的重要属性主要是Flags和Before。Flag必须是cli.Flag数组。以上面截取的部分Flags来看，Name代表着启动参数，如：`--registry`；EnvVars代表着读取环境变量的key；Value是默认值。而Before配置的函数将会在执行子命令前被调用，可以认为就是在这个函数中完成从cmd参数到具体配置项的赋值就行。
+
+
+
