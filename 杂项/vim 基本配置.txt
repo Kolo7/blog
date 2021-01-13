@@ -14,6 +14,8 @@ set nu " 设置行号
 set cursorline "突出显示当前行
 " set cursorcolumn " 突出显示当前列
 set showmatch " 显示括号匹配
+搜索高亮
+set hlsearch
 
 " tab 缩进
 set tabstop=4 " 设置Tab长度为4空格
