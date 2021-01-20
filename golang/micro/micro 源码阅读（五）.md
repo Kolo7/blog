@@ -97,34 +97,100 @@ cmd.app.Action = func(c *cli.Context) error {
 工具用起来还是很简单的，要配置的重要属性主要是Flags和Before。Flag必须是cli.Flag数组。以上面截取的部分Flags来看，Name代表着启动参数，如：`--registry`；EnvVars代表着读取环境变量的key；Value是默认值。而Before配置的函数将会在执行子命令前被调用，可以认为就是在这个函数中完成从cmd参数到具体配置项的赋值就行。
 
 ```go
+func (c *cmd)Before() error {
+    var serverOpts []server.Option
+    var clientOpts []client.Option
+    ...
+    if ttl := time.Duration(ctx.Int("register_ttl")); ttl >= 0 {
+        serverOpts = append(serverOpts, server.RegisterTTL(ttl*time.Second))
+    }
+}
+
 func (c *cmd) Init(opts ...Option) error {
     ...
-	c.app.RunAndExitOnError()
-	return nil
+    // micro.cli 工具的默认进入方法
+    c.app.RunAndExitOnError()
+    return nil
 }
 ```
 在Init方法中调用了将os.Args赋值给c.app的步骤。
 
+根据这前面的追踪就能知道go-micro究竟支持多少种启动配置参数，以及是什么时机读取配置参数的。
 ### 服务注册
 
-```go
-if name := ctx.String("registry"); len(name) > 0 && (*c.opts.Registry).String() != name {
-	r, ok := c.opts.Registries[name]
-	if !ok {
-		return fmt.Errorf("Registry %s not found", name)
-	}
-	*c.opts.Registry = r(registrySrv.WithClient(microClient))
-	serverOpts = append(serverOpts, server.Registry(*c.opts.Registry))
-	clientOpts = append(clientOpts, client.Registry(*c.opts.Registry))
-	if err := (*c.opts.Selector).Init(selector.Registry(*c.opts.Registry)); err != nil {
-		logger.Fatalf("Error configuring registry: %v", err)
-	}
-	clientOpts = append(clientOpts, client.Selector(*c.opts.Selector))
-	if err := (*c.opts.Broker).Init(broker.Registry(*c.opts.Registry)); err != nil {
-		logger.Fatalf("Error configuring broker: %v", err)
-	}
+在启动的过程中同时完成了服务注册的流程，并且会维持一个goroutine在ttl间隔后重复注册操作。
 
+服务注册线程将会一直重试，保持一个间隔时间的频率。下面的代码可以清楚的看到调用注册器和退避策略。
+```go
+func (s *rpcServer) Start() error {
+    go func() {
+        t := new(time.Ticker)
+        // only process if it exists
+        if s.opts.RegisterInterval > time.Duration(0) {
+    	    // new ticker
+    	    t = time.NewTicker(s.opts.RegisterInterval)
+    }
+    Loop:
+        err := s.Register()
+    }
+}
+
+func (s *rpcServer) Register() error {
+    ...
+    regFunc := func(service *registry.Service) error {
+        // create registry options
+        rOpts := []registry.RegisterOption{registry.RegisterTTL(config.RegisterTTL)}
+        var regErr error
+        for i := 0; i < 3; i++ {
+            // attempt to register
+            if err := config.Registry.Register(service, rOpts...); err != nil {
+                // set the error
+               regErr = err
+               // backoff then retry
+               time.Sleep(backoff.Do(i + 1))
+               continue
+            }
+            // success so nil error
+            regErr = nil
+            break
+        }
+        return regErr
+    }
+    ...
+    err := regFunc(rsvc)
+    ...
+}
 ```
+
+需要注册信息都包含在registry.Service当中。下面的展示的就是组装Service。忽略了很多中间代码，但是主要脉络就是拼装要注册的信息，例如：addr、Metadata、endpoints。后面还有一些跟发布订阅相关的逻辑也是在这个函数中实现的，暂时不做分析。
+
+```go
+func Register() error {
+    node := &registry.Node{
+        Id:       config.Name + "-" + config.Id,
+        Address:  addr,
+        Metadata: md,
+    }
+    ...
+    endpoints := make([]*registry.Endpoint, 0, len(handlerList)+len(subscriberList))
+    for _, n := range handlerList {
+        endpoints = append(endpoints, s.handlers[n].Endpoints()...)
+    }
+    for _, e := range subscriberList {
+        endpoints = append(endpoints, e.Endpoints()...)
+    }
+    service := &registry.Service{
+        Name:      config.Name,
+        Version:   config.Version,
+        Nodes:     []*registry.Node{node},
+    	Endpoints: endpoints,
+    }
+}
+```
+
+
+
+
 
 
 
