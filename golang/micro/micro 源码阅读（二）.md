@@ -36,7 +36,7 @@ func newRpcServer(opts ...Option) Server {
 
 遇到了熟悉的结构，newOptions中都是注入默认实现，不再跟进查看；和service不同的是在server中要多出来了Router的构造，目前也不了解，先放一边。
 
-```
+```go
 // server/rpc_server.go
 func (s *rpcServer) Start() error {
     ...
@@ -93,7 +93,7 @@ TODO:这里有关一个知识点，就是读入证书密钥文件，启动http�
 
 这部分代码有关设置tls配置，瞎摸索了一下，还需要官方默认实现验证一下。
 
-### 阻塞发生
+### TCP监听器
 
 走到这已经初见底层，而阻塞方法的调用似乎就发生在这里面`mnet.Listen(addr, fn)`。
 

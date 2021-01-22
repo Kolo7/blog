@@ -17,7 +17,7 @@ func RegisterHelloHandler(s server.Server, hdlr HelloHandler, opts ...server.Han
 	type Hello struct {
 		hello
 	}
-	//h := &helloHandler{hdlr}
+	h := &helloHandler{hdlr}
 	return s.Handle(s.NewHandler(&hdlr, opts...))
 }
 
@@ -65,5 +65,4 @@ router.serviceMap[s.name] = s
 
 在这里装配好了service和endpoint，并且通过map映射name和value。以供接收消息后调用，这一部分在`源码阅读（三）`有详细的流程分析。
 
-### 服务注册
 
