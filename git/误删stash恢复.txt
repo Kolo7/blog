@@ -1,0 +1,12 @@
+首先输入
+git fsck --lost-found
+
+这里的"dangling commit ..."你可以理解为你stash的id（经测试，该id不是按时间顺序排列）
+复制一条dangling commit 的id（其他的dangling blob不用理会）
+
+然后输入 git show '你复制的id'然后就可以查看该id的具体内容
+
+通过时间或是代码内容你就可以判断是否是你想要的id
+
+找到你想要的id后输入
+git merge "id"
